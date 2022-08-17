@@ -18,8 +18,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final PrincipalOauth2UserService principalOauth2UserService;
 
-
-
     //해당 메서드의 리턴되는 오브젝트를 IoC로 등록해준다.
     @Bean
     public BCryptPasswordEncoder encoderPwd() {
@@ -47,11 +45,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 
         //**구글 로그인이 완료되면 코드가 만들어지는게 아님, 액세스 토큰 + 사용자프로필정보 받음
-
         //1.코드받기(인증) 2. 액세스토큰(권한)
         //3. 사용자프로필 정보 가져옴 4. 그 정보를 토대로 회원가입 자동 진행 등
         //4.2 (이메일, 전화번호, 이름, 아이디) -> 집주소 등 추가 정보 입력
-
-
     }
 }

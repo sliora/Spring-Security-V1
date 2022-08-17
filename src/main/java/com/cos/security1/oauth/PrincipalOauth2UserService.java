@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
 
+    //수정해야함
     //private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     private final UserRepository userRepository;
