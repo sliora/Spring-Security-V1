@@ -9,20 +9,38 @@ package com.cos.security1.auth;
 //Authentication 객체에 UserDetail(PrincipalDetails) 객체로 접근이 가능함?
 
 import com.cos.security1.model.User;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 
 
-public class PrincipalDetails implements UserDetails {
+@Data
+public class PrincipalDetails implements UserDetails, OAuth2User {
 
     private User user;
+    private Map<String, Object> attributes;
 
+    //일반 로그인 생성자
     public PrincipalDetails(User user) {
         this.user = user;
+    }
+
+    //OAuth 로그인 생성자
+    public PrincipalDetails(User user, Map<String, Object> attributes) {
+        this.user = user;
+        this.attributes = attributes;
+    }
+
+    //위에 선언한 attributes return;
+    @Override
+    public Map<String, Object> getAttributes() {
+        return attributes;
     }
 
     @Override
@@ -67,5 +85,11 @@ public class PrincipalDetails implements UserDetails {
         //유저 모델에 loginDate를 넣어두고 현재시간 - 로긴시간 = 초과되면 return false로 설정하면 됨.
 
         return true;
+    }
+
+    //중요하지 않음 null
+    @Override
+    public String getName() {
+        return null;
     }
 }
