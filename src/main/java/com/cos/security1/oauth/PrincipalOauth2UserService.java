@@ -2,6 +2,9 @@ package com.cos.security1.oauth;
 
 import com.cos.security1.auth.PrincipalDetails;
 import com.cos.security1.model.User;
+import com.cos.security1.oauth.provider.FacebookUserInfo;
+import com.cos.security1.oauth.provider.GoogleUserInfo;
+import com.cos.security1.oauth.provider.OAuth2UserInfo;
 import com.cos.security1.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -32,12 +35,33 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
         //userRequest 정보 -> loadUser 함수 호출-> 구글로부터 회원 프로필 받음
         OAuth2User oAuth2User = super.loadUser(userRequest);
 
-        //회원가입을 강제로 진행해볼 예정
-        String provider = userRequest.getClientRegistration().getRegistrationId();
-        String providerId = oAuth2User.getAttribute("sub");
+        OAuth2UserInfo oAuth2UserInfo = null;
+
+        if (userRequest.getClientRegistration().getRegistrationId() == "google") {
+            oAuth2UserInfo = new GoogleUserInfo(oAuth2User.getAttributes());
+            System.out.println("구글 로그인 요청");
+        } else if (userRequest.getClientRegistration().getRegistrationId() == "facebook") {
+            oAuth2UserInfo = new FacebookUserInfo(oAuth2User.getAttributes());
+            System.out.println("페이스북 로그인 요청");
+        } else {
+            System.out.println("우리는 구글과 페이스북만 지원해요");
+        }
+
+
+        //회원가입을 강제로 진행 (기존 oAuth2User 활용)
+        //String provider = userRequest.getClientRegistration().getRegistrationId();
+        //String providerId = oAuth2User.getAttribute("sub");
+        //String username = provider + "_" + providerId;
+        //String password = "";
+        //String email = oAuth2User.getAttribute("email");
+        //String role = "ROLE_USER";
+
+        //회원가입을 강제로 진행 (변경 oAuth2UserInfo 활용)
+        String provider = oAuth2UserInfo.getProvider();
+        String providerId = oAuth2UserInfo.getProviderId();
         String username = provider + "_" + providerId;
         String password = "";
-        String email = oAuth2User.getAttribute("email");
+        String email = oAuth2UserInfo.getEmail();
         String role = "ROLE_USER";
 
         User userEntity = userRepository.findByUsername(username);
