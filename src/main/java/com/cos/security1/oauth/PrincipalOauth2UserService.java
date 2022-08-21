@@ -4,6 +4,7 @@ import com.cos.security1.auth.PrincipalDetails;
 import com.cos.security1.model.User;
 import com.cos.security1.oauth.provider.FacebookUserInfo;
 import com.cos.security1.oauth.provider.GoogleUserInfo;
+import com.cos.security1.oauth.provider.NaverUserInfo;
 import com.cos.security1.oauth.provider.OAuth2UserInfo;
 import com.cos.security1.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +14,8 @@ import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
+
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -37,12 +40,15 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
 
         OAuth2UserInfo oAuth2UserInfo = null;
 
-        if (userRequest.getClientRegistration().getRegistrationId() == "google") {
+        if (userRequest.getClientRegistration().getRegistrationId().equals("google")) {
             oAuth2UserInfo = new GoogleUserInfo(oAuth2User.getAttributes());
             System.out.println("구글 로그인 요청");
-        } else if (userRequest.getClientRegistration().getRegistrationId() == "facebook") {
+        } else if (userRequest.getClientRegistration().getRegistrationId().equals("facebook")) {
             oAuth2UserInfo = new FacebookUserInfo(oAuth2User.getAttributes());
             System.out.println("페이스북 로그인 요청");
+        } else if (userRequest.getClientRegistration().getRegistrationId().equals("naver")) {
+            oAuth2UserInfo = new NaverUserInfo((Map)oAuth2User.getAttributes().get("response"));
+            System.out.println("네이버 로그인 요청");
         } else {
             System.out.println("우리는 구글과 페이스북만 지원해요");
         }
@@ -76,6 +82,8 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
                     .providerId(providerId)
                     .build();
             userRepository.save(userEntity);
+        } else {
+            System.out.println("로그인을 이미 한적이 있습니다. 당신은 자동회원가입이 되었습니다.");
         }
 
         //return super.loadUser(userRequest);
